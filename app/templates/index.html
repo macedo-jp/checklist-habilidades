@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Pacientes e Avaliações</h1>
+    <a href="{{ url_for('cadastrar_crianca') }}" class="btn btn-primary shadow-sm">+ Cadastrar Nova Criança</a>
+</div>
+
+<div class="row">
+    {% for crianca in criancas %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h4 class="card-title text-primary">{{ crianca.nome }}</h4>
+                    <span class="badge bg-light text-dark border">
+                        Nasc: {{ crianca.data_nascimento.strftime('%d/%m/%Y') }}
+                    </span>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-muted mb-3">Histórico de Avaliações:</h6>
+                <div class="list-group list-group-flush mb-3">
+                    {% for aval in crianca.avaliacoes | sort(attribute='data_inicio', reverse=True) %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                        <div>
+                            <i class="bi bi-calendar-check"></i> 
+                            <strong>{{ aval.data_inicio.strftime('%d/%m/%Y - %H:%M') }}</strong>
+                        </div>
+                        <a href="{{ url_for('editar_avaliacao', avaliacao_id=aval.id) }}" class="btn btn-sm btn-outline-warning">
+                            Editar / Visualizar
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="small text-secondary">Nenhuma avaliação registrada.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-auto">
+                    <a href="{{ url_for('nova_avaliacao', crianca_id=crianca.id) }}" class="btn btn-success w-100">
+                        Iniciar Novo Checklist
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="alert alert-info">
+            <h5>Nenhuma criança cadastrada.</h5>
+            <p>Comece adicionando um paciente no botão acima.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
