@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 pb-20">
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-8 bg-blue-600 text-white flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+                <div class="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold">
+                    {{ aprendiz.nome[0] }}
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">{{ aprendiz.nome }}</h2>
+                    <p class="text-blue-100 mt-1 flex items-center">
+                        <i data-lucide="user" class="w-4 h-4 mr-2"></i>
+                        CID: {{ aprendiz.cid }} • Resp: {{ aprendiz.nome_responsavel }}
+                    </p>
+                </div>
+            </div>
+            <div class="text-right hidden md:block">
+                <p class="text-xs font-bold text-blue-200 uppercase tracking-widest">Avaliação Técnica</p>
+                <p class="text-xl font-bold">Habilidades Básicas</p>
+            </div>
+        </div>
+
+        <form method="POST" class="p-8 space-y-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-gray-50 rounded-xl border border-gray-100">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nome</label>
+                    <p class="text-sm font-semibold text-gray-900 border-b border-gray-200 pb-1">{{ aprendiz.nome }}</p>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Idade</label>
+                    <p class="text-sm font-semibold text-gray-900 border-b border-gray-200 pb-1" id="idade-display">Calculando...</p>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Diagnóstico</label>
+                    <p class="text-sm font-semibold text-gray-900 border-b border-gray-200 pb-1">{{ aprendiz.cid if aprendiz.cid else 'N/A' }}</p>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Início da Avaliação</label>
+                    <input type="date" name="data_inicio" value="{{ checklist.data_inicio if checklist else '' }}" {{ 'disabled' if readonly else 'required' }} class="w-full bg-transparent border-b border-gray-200 focus:border-blue-500 focus:ring-0 text-sm py-1" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Término da Avaliação</label>
+                    <input type="date" name="data_termino" value="{{ checklist.data_termino if checklist else '' }}" {{ 'disabled' if readonly else '' }} class="w-full bg-transparent border-b border-gray-200 focus:border-blue-500 focus:ring-0 text-sm py-1" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Psicóloga Responsável</label>
+                    <p class="text-sm font-semibold text-gray-900 border-b border-gray-200 pb-1">João Paulo</p>
+                </div>
+            </div>
+
+
+            <div class="space-y-12">
+                {% for cat in habilidades %}
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="h-px flex-1 bg-gray-100"></div>
+                        <h3 class="text-sm font-bold text-blue-600 uppercase tracking-[0.2em] whitespace-nowrap">{{ cat.categoria }}</h3>
+                        <div class="h-px flex-1 bg-gray-100"></div>
+                    </div>
+
+                    <div class="overflow-hidden border border-gray-100 rounded-2xl shadow-sm bg-white">
+                        <table class="w-full text-left border-collapse table-fixed">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100">
+                                    <th class="px-4 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest w-1/4">Habilidades</th>
+                                    <th class="px-2 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center">Faz Plenamente</th>
+                                    <th class="px-2 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center">Faz Parcialmente</th>
+                                    <th class="px-2 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center">Não Faz</th>
+                                    <th class="px-2 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest text-center">Não foi possível observar/ Não se aplica</th>
+                                    <th class="px-4 py-4 text-[9px] font-bold text-gray-400 uppercase tracking-widest w-1/5">Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                {% for item in cat.itens %}
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-4 py-4">
+                                        <p class="text-xs font-bold text-gray-900">{{ item }}</p>
+                                    </td>
+                                    {% for val in ['Faz Plenamente', 'Faz Parcialmente', 'Não Faz', 'N/A'] %}
+                                    <td class="px-2 py-4 text-center">
+                                        <label class="inline-block cursor-pointer">
+                                            <input type="radio" name="resp_{{ item }}" value="{{ val }}" {{ 'disabled' if readonly else '' }} {{ 'checked' if respostas and item in respostas and respostas[item].valor == val else '' }} class="peer sr-only" />
+                                            <div class="w-6 h-6 mx-auto rounded-full border-2 border-gray-200 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all"></div>
+                                        </label>
+                                    </td>
+                                    {% endfor %}
+                                    <td class="px-4 py-4">
+                                        <input 
+                                            type="text"
+                                            name="obs_{{ item }}"
+                                            value="{{ respostas[item].observacao if respostas and item in respostas else '' }}"
+                                            {{ 'disabled' if readonly else '' }}
+                                            placeholder="..." 
+                                            class="w-full px-2 py-1 bg-gray-50 border-b border-transparent focus:bg-white focus:border-blue-200 focus:ring-0 text-[10px] transition-all"
+                                        />
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+
+            <div class="flex items-center justify-between pt-8 border-t border-gray-100">
+                <a href="/" class="px-6 py-3 text-sm font-bold text-gray-400 hover:text-gray-600 transition-all">
+                    Voltar para o Painel
+                </a>
+                {% if not readonly %}
+                <button type="submit" class="inline-flex items-center px-12 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-200">
+                    <i data-lucide="save" class="w-5 h-5 mr-3"></i>
+                    Salvar Registro
+                </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function calcularIdade(dataNascimento) {
+        const hoje = new Date();
+        const nascimento = new Date(dataNascimento);
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const m = hoje.getMonth() - nascimento.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return idade;
+    }
+
+    const dataNasc = "{{ aprendiz.data_nascimento }}";
+    if (dataNasc) {
+        document.getElementById('idade-display').innerText = calcularIdade(dataNasc) + " anos";
+    }
+</script>
+{% endblock %}

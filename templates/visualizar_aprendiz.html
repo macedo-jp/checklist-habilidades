@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="/" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Perfil do Aprendiz</h2>
+                <p class="text-sm text-gray-500">Visualização detalhada do cadastro.</p>
+            </div>
+        </div>
+        <a href="/editar/{{ aprendiz.id }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all">
+            <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+            Editar Cadastro
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="aspect-square bg-gray-100 relative">
+                    {% if aprendiz.foto_url %}
+                    <img src="{{ aprendiz.foto_url }}" alt="{{ aprendiz.nome }}" class="w-full h-full object-cover" referrerPolicy="no-referrer">
+                    {% else %}
+                    <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                        <i data-lucide="user" class="w-16 h-16 mb-2"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest">Sem Foto</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="text-lg font-bold text-gray-900">{{ aprendiz.nome }}</h3>
+                    <p class="text-sm text-gray-500 mb-4">{{ aprendiz.cid if aprendiz.cid else 'Sem CID' }}</p>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border 
+                        {% if aprendiz.status == 'Avaliação' %}bg-blue-50 text-blue-700 border-blue-200
+                        {% elif aprendiz.status == 'Em Andamento' %}bg-amber-50 text-amber-700 border-amber-200
+                        {% else %}bg-green-50 text-green-700 border-green-200{% endif %}">
+                        {{ aprendiz.status }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Terapeuta Responsável</h4>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                        <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-900">{{ aprendiz.nome_terapeuta }}</p>
+                        <p class="text-xs text-gray-500">Responsável Clínico</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="font-bold text-gray-900">Informações Pessoais</h3>
+                </div>
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">CPF</label>
+                        <p class="text-sm font-semibold text-gray-900">{{ aprendiz.cpf }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Data de Nascimento</label>
+                        <p class="text-sm font-semibold text-gray-900">{{ aprendiz.data_nascimento }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="font-bold text-gray-900">Contato e Responsáveis</h3>
+                </div>
+                <div class="p-8 space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nome do Responsável</label>
+                            <p class="text-sm font-semibold text-gray-900">{{ aprendiz.nome_responsavel }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Telefone</label>
+                            <p class="text-sm font-semibold text-gray-900">{{ aprendiz.telefone_responsavel }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">E-mail</label>
+                        <p class="text-sm font-semibold text-gray-900">{{ aprendiz.email_responsavel }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

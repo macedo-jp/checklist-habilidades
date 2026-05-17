@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Terapeutas</h2>
+            <p class="text-sm text-gray-500 mt-1">Gerencie a equipe de profissionais da clínica.</p>
+        </div>
+        <a href="/cadastro-terapeuta" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+            Novo Terapeuta
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleFilterModal()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <i data-lucide="filter" class="w-3.5 h-3.5 mr-1.5"></i>
+                    Filtrar
+                </button>
+                <form action="/importar-terapeutas" method="POST" enctype="multipart/form-data" class="inline m-0">
+                    <label class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer">
+                        <i data-lucide="upload" class="w-3.5 h-3.5 mr-1.5"></i>
+                        Importar
+                        <input type="file" name="file" class="hidden" onchange="this.form.submit()" accept=".csv">
+                    </label>
+                </form>
+                <a href="/exportar-terapeutas" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <i data-lucide="download" class="w-3.5 h-3.5 mr-1.5"></i>
+                    Exportar
+                </a>
+            </div>
+            <p class="text-xs text-gray-500 font-medium">Mostrando {{ terapeutas|length }} registros</p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-200">
+                        <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
+                        <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocupação / Especialidade</th>
+                        <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Registro Profissional</th>
+                        <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Data de Registro</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% if not terapeutas %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">Nenhum terapeuta cadastrado.</td>
+                    </tr>
+                    {% else %}
+                    {% for t in terapeutas %}
+                    <tr class="hover:bg-blue-50/30 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs mr-3">
+                                    {{ t.nome[0] }}
+                                </div>
+                                <span class="text-sm font-semibold text-gray-900">{{ t.nome }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ t.especialidade }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">{{ t.registro_profissional }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ t.data_formatada }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleFilterModal() {
+        const modal = document.getElementById('filterModal');
+        modal.classList.toggle('hidden');
+        modal.classList.toggle('flex');
+    }
+</script>
+
+
+<div id="filterModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                    <i data-lucide="filter" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900">Filtrar Terapeutas</h3>
+                    <p class="text-xs text-slate-500">Refine os resultados da busca</p>
+                </div>
+            </div>
+            <button onclick="toggleFilterModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <form action="/terapeutas" method="GET" class="p-6 space-y-6">
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nome do Terapeuta</label>
+                    <input type="text" name="nome" value="{{ request.args.get('nome', '') }}" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all outline-none text-sm" placeholder="Ex: Dra. Alice">
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Especialidade</label>
+                    <input type="text" name="especialidade" value="{{ request.args.get('especialidade', '') }}" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all outline-none text-sm" placeholder="Ex: Fonoaudiologia">
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Registro Profissional</label>
+                    <input type="text" name="registro" value="{{ request.args.get('registro', '') }}" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all outline-none text-sm" placeholder="Ex: CRP-12345">
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 pt-6 border-t border-slate-100">
+                <a href="/terapeutas" class="flex-1 px-4 py-2 text-center text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">Limpar Filtros</a>
+                <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">Aplicar Filtros</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

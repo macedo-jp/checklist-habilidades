@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8 py-12">
+    <div class="text-center space-y-2">
+        <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Iniciar Novo Checklist</h2>
+        <p class="text-gray-500">Selecione o aprendiz para o qual deseja aplicar a avaliação de habilidades básicas.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+        <div class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Filtrar Aprendiz</label>
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                    <input 
+                        type="text" 
+                        id="filtro"
+                        placeholder="Digite o nome ou CID..." 
+                        class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all text-lg"
+                    />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Selecionar da Lista</label>
+                <div id="lista-aprendizes" class="max-h-64 overflow-y-auto border border-gray-100 rounded-xl divide-y divide-gray-50">
+                    {% if not aprendizes %}
+                    <div class="p-8 text-center text-gray-400 italic">Nenhum aprendiz encontrado.</div>
+                    {% else %}
+                    {% for a in aprendizes %}
+                    <button
+                        type="button"
+                        onclick="selecionarAprendiz(event, {{ a.id }}, '{{ a.nome }}')"
+                        class="aprendiz-item w-full flex items-center p-4 text-left transition-all hover:bg-blue-50/50"
+                        data-nome="{{ a.nome|lower }}"
+                        data-cid="{{ a.cid|lower }}"
+                    >
+                        <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mr-4 font-bold">
+                            {{ a.nome[0] }}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900">{{ a.nome }}</p>
+                            <p class="text-xs text-gray-500">CID: {{ a.cid }} • Resp: {{ a.nome_responsavel }}</p>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-5 h-5 text-blue-600 hidden"></i>
+                    </button>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="text-sm text-gray-500">
+                    Não encontrou o aprendiz? 
+                    <a href="/cadastro" class="text-blue-600 font-semibold hover:underline">
+                        Cadastrar novo aprendiz
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <a href="/" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                Cancelar
+            </a>
+            <button
+                id="btn-confirmar"
+                disabled
+                onclick="confirmarSelecao()"
+                class="inline-flex items-center px-8 py-3 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50 disabled:shadow-none"
+            >
+                Confirmar Seleção
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selecionadoId = null;
+
+    function selecionarAprendiz(event, id, nome) {
+        selecionadoId = id;
+        document.querySelectorAll('.aprendiz-item').forEach(el => {
+            el.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-600');
+            const icon = el.querySelector('i[data-lucide="arrow-right"]');
+            if (icon) icon.classList.add('hidden');
+        });
+        
+        const selectedEl = event.currentTarget;
+        selectedEl.classList.add('bg-blue-50', 'border-l-4', 'border-blue-600');
+        const icon = selectedEl.querySelector('i[data-lucide="arrow-right"]');
+        if (icon) icon.classList.remove('hidden');
+        
+        document.getElementById('btn-confirmar').disabled = false;
+    }
+
+    function confirmarSelecao() {
+        if (selecionadoId) {
+            window.location.href = `/checklist/${selecionadoId}`;
+        }
+    }
+
+    document.getElementById('filtro').addEventListener('input', (e) => {
+        const termo = e.target.value.toLowerCase();
+        document.querySelectorAll('.aprendiz-item').forEach(el => {
+            const nome = el.dataset.nome;
+            const cid = el.dataset.cid;
+            if (nome.includes(termo) || cid.includes(termo)) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+    });
+</script>
+{% endblock %}

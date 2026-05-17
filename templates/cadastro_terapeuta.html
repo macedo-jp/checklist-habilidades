@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+    <div class="flex items-center space-x-4">
+        <a href="/terapeutas" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </a>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Cadastrar Novo Terapeuta</h2>
+            <p class="text-sm text-gray-500">Adicione um novo profissional à equipe da clínica.</p>
+        </div>
+    </div>
+    
+    {% if error %}
+    <div class="p-4 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" class="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+        <div class="p-8 space-y-6">
+            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2">Informações do Terapeuta</h3>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Nome Completo</label>
+                <input type="text" name="nome" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all text-lg" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Ocupação / Especialidade</label>
+                <input type="text" name="especialidade" required placeholder="Ex: Fonoaudiologia, TO, Psicologia" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all text-lg" />
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Registro Profissional (Opcional)</label>
+                <input type="text" name="registro_profissional" placeholder="Ex: CRP-00000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all text-lg" />
+            </div>
+
+            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mt-8">Acesso ao Sistema</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Nome de Usuário</label>
+                    <input type="text" name="username" required placeholder="ex: alice.smith" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Senha</label>
+                    <input type="password" name="password" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all" />
+                </div>
+            </div>
+            <div class="space-y-2 mt-4">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Tipo de Acesso (Cargo)</label>
+                <select name="cargo" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition-all">
+                    <option value="Usuário">Usuário (Padrão)</option>
+                    <option value="Administrador">Administrador</option>
+                </select>
+                <p class="text-xs text-slate-500 mt-1">O "Administrador" tem acesso ao menu Terapeutas e Configurações.</p>
+            </div>
+        </div>
+
+        <div class="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-end space-x-4">
+            <a href="/terapeutas" class="px-6 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">Cancelar</a>
+            <button type="submit" class="inline-flex items-center px-8 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
+                <i data-lucide="save" class="w-4 h-4 mr-2"></i>
+                Salvar Registro
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
